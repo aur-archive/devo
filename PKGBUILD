@@ -1,0 +1,43 @@
+# Maintainer: Luke McCarthy <luke@iogopro.co.uk>
+
+pkgname=devo
+pkgver=1.3.0
+pkgrel=1
+pkgdesc="Text editing devolved"
+arch=('i686' 'x86_64' 'armv6' 'armv6h' 'armv7' 'armv7h')
+url="https://github.com/shaurz/devo"
+license=('MIT')
+groups=()
+depends=('wxgtk' 'webkitgtk2')
+makedepends=('subversion' 'git' 'python2>=2.7' 'python2-cx_freeze' 'wxpython>=3.0')
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=(!strip)
+install=devo.install
+changelog=
+noextract=()
+source=(https://github.com/shaurz/${pkgname}/archive/v${pkgver}.tar.gz
+        ${pkgname}.install)
+md5sums=(f1d29a88aea78baab736e1eaf690d21f
+         46a0eb07686a7d96206499e94c0452ba)
+
+build() {
+    cd "$srcdir/$pkgname-$pkgver"
+    python2 build.py
+}
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+    install -d -m 755 "$pkgdir/usr/bin"
+    install -d -m 755 "$pkgdir/usr/lib"
+    mv dist/linux2/$pkgname-$pkgver "$pkgdir/usr/lib/$pkgname"
+    ln -s ../lib/$pkgname/$pkgname "$pkgdir/usr/bin/$pkgname"
+
+    install -D -m 644 icons/${pkgname}.desktop "$pkgdir/usr/share/applications/${pkgname}.desktop"
+    for iconsize in 16 24 32 48 64 128 256; do
+        install -D -m 644 res/icons/${pkgname}-icon-$iconsize.png "$pkgdir/usr/share/icons/hicolor/${iconsize}x${iconsize}/apps/${pkgname}.png"
+    done
+}
